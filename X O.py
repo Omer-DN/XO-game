@@ -9,6 +9,13 @@ class Player:
         self.name = name
         self.mark = mark
         self.score = score
+        
+        """
+        Checks if any character has been entered
+        """
+    def check_name(self):
+        while self.name == '':
+            self.name = input('enter your name again: ')
 
 
 class Board:
@@ -143,13 +150,17 @@ def main():
     OP = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     array = ['a']
     vs_computer = int(input("if you want to play vs computer, enter 1, else enter 0: "))
+    while vs_computer !=0 or vs_computer != 1:
+        vs_computer = int(input("enter again: "))
     player_a = Player(input("enter you'r name: "), 'X', 0)
+    player_a.check_name()
 
     if vs_computer == 1:
         player_b = Player('computer', 'O', 0)
         print('you play vs computer')
     else:
         player_b = Player(input("enter you'r name: "), 'O', 0)
+        player_b.check_name()
 
     if Beginner_selection() == 1:
         # Inserting values into a player's performances according to the lottery number
