@@ -18,7 +18,7 @@ class Player:
     def check_name(self):
         while self.name == '':
             self.name = input('enter your name again: ')
-        print('hello {}\n'.format(self.name))
+        print('hello {}'.format(self.name))
 
 
 class Board:
@@ -48,7 +48,7 @@ class Board:
                 True If the place is empty
         """
         if self.board[choice] != ' ':
-            print('this place is taken')
+            print('\nthis place is taken')
             return False
         else:
             self.board[choice] = player.mark
@@ -110,12 +110,16 @@ def Select_a_number(board, player):
     :param player: the player
     :return: true or false, and the number chosen
     """
-    # print("print 'p' to print all board")
     while True:
-        choice = int(input("\n{}, enter you place 0-8: ".format(player.name)))
-        if -1 < choice < 9:
-            return True, choice
-        print('number not valid')
+        choice = input("{}, enter you place 0-8: \n"
+                       "print 'p' to print all board: ".format(player.name))
+        print('\n')
+        if choice == 'p':
+            board.print_board()
+        elif -1 < int(choice) < 9:
+            return True, int(choice)
+        else:
+            print('number not valid')
 
 
 def choose_for_computer(player):
@@ -124,7 +128,7 @@ def choose_for_computer(player):
      and marks the place with the selected number
     :param player:instance of the player
     """
-    print('computer choose a number\n')
+    print('\ncomputer choose a number\n')
     return random.randint(0, 8)
 
 
@@ -161,28 +165,29 @@ def main():
     first_of_computer = True
 
     vs_computer = int(input("play vs computer - 1\nplay vs human - 0\nyour choice: "))
-
+    print('------------------')
     # Input integrity check
     while True:
         # check_number(human_vs)
         if 1 == int(vs_computer):
-            print('\nyou play vs computer')
+            print('you play vs computer')
             break
         elif 0 == int(vs_computer):
-            print('\nyou play vs friend')
+            print('you play vs friend')
             break
         else:
             vs_computer = int(input("enter '1', or '0': "))
 
-    player_a = Player(input("\nenter you'r name: "), 'X', 0)
+    player_a = Player(input("enter you'r name: "), 'X', 0)
     player_a.check_name()
 
     if vs_computer == 1:
         player_b = Player('computer', 'O', 0)
         print('computer is ready!')
     else:
-        player_b = Player(input("\nenter you'r name: "), 'O', 0)
+        player_b = Player(input("enter you'r name: "), 'O', 0)
         player_b.check_name()
+    print('------------------')
 
     if Beginner_selection() == 1:
         # Inserting values into a player's performances according to the lottery number
@@ -190,7 +195,9 @@ def main():
     else:
         first, second = player_b, player_a
 
-    print('\n{} is first\n'.format(first.name))
+    print('{} is first\n'.format(first.name))
+    print('------------------')
+
     board.print_board()
     # ---------------------------------------------------------------------------------------------- #
     while numberOfGames:
