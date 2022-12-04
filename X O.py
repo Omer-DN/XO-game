@@ -111,11 +111,15 @@ def Select_a_number(board, player):
     :return: true or false, and the number chosen
     """
     while True:
-        choice = input("{}, enter you place 0-8: \n"
-                       "print 'p' to print all board: ".format(player.name))
+        choice = input("{}, Enter you place 0-8: \n"
+                       "Enter 'p' to print the board: \n"
+                       "Enter 's' to print the board: \n".format(player.name))
         print('\n')
         if choice == 'p':
             board.print_board()
+        if choice == 's':
+            print(player.score)
+
         elif -1 < int(choice) < 9:
             return True, int(choice)
         else:
@@ -239,7 +243,7 @@ def main():
         board.print_board()
         print('\n')
         if board.if_win(PossibilitiesToWin, first):
-            exit()
+            main()
 
         check = False
         while check is False:
@@ -279,7 +283,7 @@ def main():
             board.print_board()
             print('\n')
             if board.if_win(PossibilitiesToWin, second):
-                exit()
+                main()
 
 
 if __name__ == "__main__":
