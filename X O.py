@@ -89,7 +89,7 @@ class Board:
                     check.append(x)
                 if len(check) == 2:
                     for number in i:
-                        if number not in check and op[number] != ' ':
+                        if number not in check:
                             return True, number
         return False, None
 
@@ -112,52 +112,36 @@ def Select_a_number(board, player):
     """
     while True:
         choice = input("{}, Enter you place 0-8: \n"
-                       "Enter 'p' to print the board: \n"
-                       "Enter 's' to print the board: \n".format(player.name))
+                       "Enter 'p' to print the board: \n".format(player.name))
         print('\n')
         if choice == 'p':
             board.print_board()
         if choice == 's':
             print(player.score)
 
-        elif -1 < int(choice) < 9:
-            return True, int(choice)
+        elif 0 < int(choice) < 10:
+            return True, int(choice) - 1
         else:
             print('number not valid')
 
 
-def choose_for_computer(player):
+def choose_for_computer():
     """
     The function receives the instance of the board, and an instance of the player,
      and marks the place with the selected number
-    :param player:instance of the player
+    :param :instance of the player
     """
     print('\ncomputer choose a number\n')
     return random.randint(0, 8)
 
 
-def check_number(number):
-    try:
-        # Convert it into integer
-        val = int(number)
-        print("Input is an integer number. Number = ", val)
-        return True
-    except ValueError:
-        try:
-            # Convert it into float
-            val = float(number)
-            # print("Input is a float  number. Number = ", val)
-        except ValueError:
-            print("No.. input is not a number. It's a string")
-
-
-def keep_play(option):
+def keep_play():
     """
     Whether to continue playing after the game is over
-    :param option:Letter
-    :return:True or false, whether to continue playing or not (respectively)
+    return:True or false, whether to continue playing or not (respectively)
     """
-    if option == 'y':
+    keep_to_play = input("ENTER 'y' to keep play ")
+    if keep_to_play == 'y':
         return True
     return False
 
@@ -168,19 +152,13 @@ def main():
     PossibilitiesToWin = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     first_of_computer = True
 
-    vs_computer = int(input("play vs computer - 1\nplay vs human - 0\nyour choice: "))
-    print('------------------')
     # Input integrity check
     while True:
-        # check_number(human_vs)
-        if 1 == int(vs_computer):
-            print('you play vs computer')
-            break
-        elif 0 == int(vs_computer):
-            print('you play vs friend')
-            break
-        else:
-            vs_computer = int(input("enter '1', or '0': "))
+        vs_computer = int(input("play vs computer - 1\nplay vs human - 0\nyour choice: "))
+        # if check_number(vs_computer):
+        break
+
+    print('------------------')
 
     player_a = Player(input("enter you'r name: "), 'X', 0)
     player_a.check_name()
@@ -212,15 +190,15 @@ def main():
             if first_of_computer:
                 first_of_computer = False
                 while True:
-                    number = choose_for_computer(first)
+                    number = choose_for_computer()
                     if board.Marking_a_place(number, first):
                         break
             else:
                 while check is False:
                     # Choosing a computer drawn number
-                    check_pos, number = board.Prevents_victory(second, PossibilitiesToWin)
+                    check_pos, number = board.Prevents_victory(first, PossibilitiesToWin)
                     if check_pos is False:
-                        check_pos, number = board.Prevents_victory(first, PossibilitiesToWin)
+                        check_pos, number = board.Prevents_victory(second, PossibilitiesToWin)
 
                     # Checking whether the location of the number is captured
                     # If the number position is free, then put the computer's choice in it,
@@ -228,7 +206,7 @@ def main():
                     if check_pos:
                         check_pos = board.Marking_a_place(number, first)
                     while check_pos is False:
-                        number = choose_for_computer(first)
+                        number = choose_for_computer()
                         if board.Marking_a_place(number, first):
                             check_pos = True
                     check = True
@@ -242,8 +220,12 @@ def main():
 
         board.print_board()
         print('\n')
-        if board.if_win(PossibilitiesToWin, first):
-            main()
+        check_winning = board.if_win(PossibilitiesToWin, first)
+        if check_winning or numberOfGames == 0:
+            if keep_play():
+                main()
+            else:
+                exit()
 
         check = False
         while check is False:
@@ -253,23 +235,23 @@ def main():
                     first_of_computer = False
                     check = True
                     while True:
-                        number = choose_for_computer(second)
+                        number = choose_for_computer()
                         if board.Marking_a_place(number, second):
                             break
                     # The computer picks a number the second time and so on
                 else:
                     while check is False:
                         # Choosing a computer drawn number
-                        check_pos, number = board.Prevents_victory(first, PossibilitiesToWin)
+                        check_pos, number = board.Prevents_victory(second, PossibilitiesToWin)
                         if check_pos is False:
-                            check_pos, number = board.Prevents_victory(second, PossibilitiesToWin)
+                            check_pos, number = board.Prevents_victory(first, PossibilitiesToWin)
                         # Checking whether the location of the number is captured
                         # If the number position is free, then put the computer's choice in it,
                         # and exit the while loop
                         if check_pos:
                             check_pos = board.Marking_a_place(number, second)
                         while check_pos is False:
-                            number = choose_for_computer(second)
+                            number = choose_for_computer()
                             if board.Marking_a_place(number, second):
                                 check_pos = True
                         check = True
@@ -282,8 +264,12 @@ def main():
 
             board.print_board()
             print('\n')
-            if board.if_win(PossibilitiesToWin, second):
-                main()
+            check_winning = board.if_win(PossibilitiesToWin, first)
+            if check_winning or numberOfGames == 0:
+                if keep_play():
+                    main()
+                else:
+                    exit()
 
 
 if __name__ == "__main__":
