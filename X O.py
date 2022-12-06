@@ -16,7 +16,7 @@ class Player:
         """
 
     def check_name(self):
-        while self.name == '':
+        while self.name == '' or self.name == ' ':
             self.name = input('enter your name again: ')
         print('hello {}'.format(self.name))
 
@@ -75,7 +75,6 @@ class Board:
 
     def Prevents_victory(self, player, op):
         """
-
         :param op:All winning options
         :param player:the player
         :return: Returns the option to prevent the other player from winning
@@ -90,7 +89,8 @@ class Board:
                 if len(check) == 2:
                     for number in i:
                         if number not in check:
-                            return True, number
+                            if self.board[number] == ' ':
+                                return True, number
         return False, None
 
 
@@ -111,18 +111,20 @@ def Select_a_number(board, player):
     :return: true or false, and the number chosen
     """
     while True:
-        choice = input("{}, Enter you place 0-8: \n"
-                       "Enter 'p' to print the board: \n".format(player.name))
-        print('\n')
-        if choice == 'p':
-            board.print_board()
-        if choice == 's':
-            print(player.score)
+        try:
+            choice = input("{}, Enter you place 1-9: \n"
+                           "Enter 'p' to print the board: \n".format(player.name))
+            print('\n')
+            if choice == 'p':
+                board.print_board()
+            if choice == 's':
+                print(player.score)
 
-        elif 0 < int(choice) < 10:
-            return True, int(choice) - 1
-        else:
-            print('number not valid')
+            elif 0 < int(choice) < 10:
+                return True, int(choice) - 1
+
+        except ValueError:
+            print('ValueError')
 
 
 def choose_for_computer():
@@ -133,6 +135,14 @@ def choose_for_computer():
     """
     print('\ncomputer choose a number\n')
     return random.randint(0, 8)
+
+
+def check_number(number):
+    if number == 0:
+        return True
+    elif number == 1:
+        return True
+    return False
 
 
 def keep_play():
@@ -151,12 +161,13 @@ def main():
     board = Board()
     PossibilitiesToWin = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     first_of_computer = True
+    vs_computer = int(input("play vs computer - 1\nplay vs human - 0\nyour choice: "))
 
     # Input integrity check
     while True:
-        vs_computer = int(input("play vs computer - 1\nplay vs human - 0\nyour choice: "))
-        # if check_number(vs_computer):
-        break
+        if check_number(vs_computer):
+            break
+        vs_computer = input('ENTER 0 or 1: ')
 
     print('------------------')
 
@@ -165,7 +176,6 @@ def main():
 
     if vs_computer == 1:
         player_b = Player('computer', 'O', 0)
-        print('computer is ready!')
     else:
         player_b = Player(input("enter you'r name: "), 'O', 0)
         player_b.check_name()
@@ -215,15 +225,18 @@ def main():
             while check is False:
                 check, number = Select_a_number(board, first)
                 if check:
-                    board.Marking_a_place(number, first)
-                    break
+                    if board.Marking_a_place(number, first):
+                        break
+                    check = False
 
         board.print_board()
         print('\n')
         check_winning = board.if_win(PossibilitiesToWin, first)
+        if check_winning:
+            first.score += 1
         if check_winning or numberOfGames == 0:
             if keep_play():
-                main()
+                board = Board()
             else:
                 exit()
 
@@ -257,17 +270,21 @@ def main():
                         check = True
 
             else:
-                while True:
+                while check is False:
                     check, number = Select_a_number(board, second)
-                    if board.Marking_a_place(number, second):
-                        break
+                    if check:
+                        if board.Marking_a_place(number, second):
+                            break
+                        check = False
 
             board.print_board()
             print('\n')
-            check_winning = board.if_win(PossibilitiesToWin, first)
+            check_winning = board.if_win(PossibilitiesToWin, second)
+            if check_winning:
+                second.score += 1
             if check_winning or numberOfGames == 0:
                 if keep_play():
-                    main()
+                    board = Board()
                 else:
                     exit()
 
