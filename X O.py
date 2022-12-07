@@ -1,3 +1,5 @@
+# @ create by Omer Dayan
+
 import random
 
 
@@ -16,6 +18,9 @@ class Player:
         """
 
     def check_name(self):
+        """
+        Checking if the player's name is correct (including characters)
+        """
         while self.name == '' or self.name == ' ':
             self.name = input('enter your name again: ')
         print('hello {}'.format(self.name))
@@ -112,12 +117,13 @@ def Select_a_number(board, player):
     """
     while True:
         try:
-            choice = input("{}, Enter you place 1-9: \n"
-                           "Enter 'p' to print the board: \n".format(player.name))
+            choice = input("Enter you place 1-9: \n"
+                           "Enter 'p' to print the board: \n"
+                           "Enter 's' to print the score: \n")
             print('\n')
             if choice == 'p':
                 board.print_board()
-            if choice == 's':
+            elif choice == 's':
                 print(player.score)
 
             elif 0 < int(choice) < 10:
@@ -125,6 +131,7 @@ def Select_a_number(board, player):
 
         except ValueError:
             print('ValueError')
+            return False, None
 
 
 def choose_for_computer():
@@ -138,11 +145,15 @@ def choose_for_computer():
 
 
 def check_number(number):
-    if number == 0:
+    """
+    Checks if the character is correct
+    :param number: choose if play vs player or computer
+    :return: True if the choose is correct, else the
+    """
+    if number != '0' and number != '1':
+        return False
+    else:
         return True
-    elif number == 1:
-        return True
-    return False
 
 
 def keep_play():
@@ -150,10 +161,19 @@ def keep_play():
     Whether to continue playing after the game is over
     return:True or false, whether to continue playing or not (respectively)
     """
-    keep_to_play = input("ENTER 'y' to keep play ")
+    keep_to_play = (input("ENTER 'y' to keep play ")).lower()
     if keep_to_play == 'y':
         return True
     return False
+
+
+def player_is_human(check, player, board):
+    while check is False:
+        check, number = Select_a_number(board, player)
+        if check:
+            if board.Marking_a_place(number, player):
+                break
+            check = False
 
 
 def main():
@@ -161,11 +181,13 @@ def main():
     board = Board()
     PossibilitiesToWin = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     first_of_computer = True
-    vs_computer = int(input("play vs computer - 1\nplay vs human - 0\nyour choice: "))
 
-    # Input integrity check
+    # Definition of players
+    vs_computer = input("play vs computer - 1\nplay vs human - 0\nyour choice: ")
+    # Play against computer or human
     while True:
         if check_number(vs_computer):
+            vs_computer = int(vs_computer)
             break
         vs_computer = input('ENTER 0 or 1: ')
 
@@ -181,6 +203,7 @@ def main():
         player_b.check_name()
     print('------------------')
 
+    # First player draw for the game
     if Beginner_selection() == 1:
         # Inserting values into a player's performances according to the lottery number
         first, second = player_a, player_b
@@ -220,25 +243,20 @@ def main():
                         if board.Marking_a_place(number, first):
                             check_pos = True
                     check = True
-
         elif first.name != 'computer':
-            while check is False:
-                check, number = Select_a_number(board, first)
-                if check:
-                    if board.Marking_a_place(number, first):
-                        break
-                    check = False
+            player_is_human(check, first, board)
 
         board.print_board()
         print('\n')
         check_winning = board.if_win(PossibilitiesToWin, first)
         if check_winning:
-            first.score += 1
+            second.score += 1
         if check_winning or numberOfGames == 0:
             if keep_play():
                 board = Board()
+                numberOfGames = 5
             else:
-                exit()
+                break
 
         check = False
         while check is False:
@@ -268,14 +286,8 @@ def main():
                             if board.Marking_a_place(number, second):
                                 check_pos = True
                         check = True
-
             else:
-                while check is False:
-                    check, number = Select_a_number(board, second)
-                    if check:
-                        if board.Marking_a_place(number, second):
-                            break
-                        check = False
+                player_is_human(check, second, board)
 
             board.print_board()
             print('\n')
@@ -285,8 +297,9 @@ def main():
             if check_winning or numberOfGames == 0:
                 if keep_play():
                     board = Board()
+                    numberOfGames = 5
                 else:
-                    exit()
+                    break
 
 
 if __name__ == "__main__":
